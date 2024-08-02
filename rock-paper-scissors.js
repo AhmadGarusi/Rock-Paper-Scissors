@@ -1,35 +1,52 @@
+let divGame = document.getElementById("game");
+let displayer = document.createElement("div");
+displayer.setAttribute("id", "displayer");
+
+divGame.appendChild(displayer);
+
+
+let scoretext = document.createElement('div');
+divGame.appendChild(scoretext);
+
 function getComputerChoice(){
   let num = Math.random();
 
-  if (num > 0.66) return "Rock";
+  if (num > 0.66) return "rock";
   else if ( num > 0.33 ) return "paper";
   else return "scissors";
 }
 
-function getHumanChoice(){
-  let humanChoice = "a";
+function getHumanChoice(target){
+  let humanChoice = "";
 
-  humanChoice = prompt("rock, paper, scissors?");
-  humanChoice = humanChoice.toLowerCase();
-
-  while ( humanChoice !== "scissors" && humanChoice !== "rock" && humanChoice !== "paper" ){
-    humanChoice = prompt("wrong awnser :(\nrock, paper, scissors?");
-    humanChoice = humanChoice.toLowerCase();
+  switch(target.id)
+  {
+    case 'rock':
+      humanChoice = 'rock';
+      break;
+    case 'paper':
+      humanChoice = 'paper';
+      break;
+    case 'scissors':
+      humanChoice = 'scissors'
+      break;
+    default:
+      console.log('wrong button id try again')
   }
 
   return humanChoice;
 }
 
 function playRound(humanChoice, computerchoise){
-  if( humanChoice === computerchoise ){ console.log("draw..."); return 0; }
+  if( humanChoice === computerchoise ){ displayer.textContent = "draw..."; return 0; }
 
-  if( humanChoice === "rock" && computerchoise === "scissors" ) { console.log( "you won. rock breaks scissors" );   return 1; }
-  if( humanChoice === "scissors" && computerchoise === "paper" ) { console.log( "you won. scissors cuts paper" );   return 1; }
-  if( humanChoice === "paper" && computerchoise === "rock" ) { console.log( "you won. paper surrounds rock" );      return 1; }
+  if( humanChoice === "rock" && computerchoise === "scissors" ) { displayer.textContent = "you won. rock breaks scissors" ;   return 1; }
+  if( humanChoice === "scissors" && computerchoise === "paper" ) { displayer.textContent = "you won. scissors cuts paper" ;   return 1; }
+  if( humanChoice === "paper" && computerchoise === "rock" ) { displayer.textContent = "you won. paper surrounds rock" ;      return 1; }
 
-  if( humanChoice === "scissors" && computerchoise === "rock" ) { console.log( "you loose. rock breaks scissors" );return -1; }
-  if( humanChoice === "paper" && computerchoise === "scissors" ) { console.log( "you loose. scissors cuts paper" );return -1; }
-  if( humanChoice === "rock" && computerchoise === "paper" ) { console.log( "you loose. paper surrounds rock" );   return -1; }
+  if( humanChoice === "scissors" && computerchoise === "rock" ) { displayer.textContent = "you loose. rock breaks scissors" ; return -1; }
+  if( humanChoice === "paper" && computerchoise === "scissors" ) { displayer.textContent = "you loose. scissors cuts paper" ; return -1; }
+  if( humanChoice === "rock" && computerchoise === "paper" ) { displayer.textContent = "you loose. paper surrounds rock" ;    return -1; }
 }
 
 function tryAgain() {
@@ -40,33 +57,30 @@ function tryAgain() {
   else return false;
 }
 
-function playGame(){
-  let humanScore = 0;
-  let computerScore = 0;
-  let humanSelection;
-  let computerSelection;
+let humanScore = 0;
+let computerScore = 0;
+let buttons = document.getElementById("buttons");
 
-  for( i = 1 ; i <= 5 ; i++ ){
-    humanSelection = getHumanChoice();
-    computerSelection = getComputerChoice();
-
-    let score = playRound( humanSelection, computerSelection);
-    if ( score === 1 ) humanScore++;
-    else if (score === -1) computerScore++;
-
-    console.log( `round : ${i}/5 \nyour score: ${humanScore}\ncomputer score: ${computerScore}` );
+buttons.addEventListener('click', function (e) {
+  let humanSelection = getHumanChoice(e.target);
+  let computerSelection = getComputerChoice();
+  
+  let score = playRound(humanSelection, computerSelection);
+  if ( score === 1 ) humanScore++;
+  else if (score === -1) computerScore++;
+  
+  if ( computerScore < 5 && humanScore < 5 )
+    scoretext.textContent = `your score: ${humanScore} computer score: ${computerScore}`;
+  
+  else if (computerScore === 5){
+    scoretext.textContent = `your score: ${humanScore} computer score: ${computerScore} you lost this game :(`;
+    computerScore = 0;
+    humanScore = 0;
   }
+  else if (humanScore === 5){
+    scoretext.textContent = `your score: ${humanScore} computer score: ${computerScore} you won this game :)`;
+    computerScore = 0;
+    humanScore = 0;
+  }
+});
 
-  if (humanScore > computerScore) console.log ("winner winner chicken dinner!!!");
-  else if (humanScore === computerScore) console.log( "WOW draw...." );
-  else console.log( "ahhhhh you lost" );
-}
-
-
-let again = true;
-
-while(again)
-{
-  playGame();
-  again = tryAgain();
-}
